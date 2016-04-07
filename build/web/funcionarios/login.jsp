@@ -27,7 +27,7 @@ and open the template in the editor.
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="./funcionarios/login.jsp">Login FuncionÃ¡rios</a></li>
+                        <li><a href="../">Login Clientes</a></li>
                     </ul>
                 </div>
             </div>
@@ -35,30 +35,33 @@ and open the template in the editor.
         <div class="content">
             <div class="row">
                 <div class="col-md-5 col-md-offset-3">
+                    <%
+                        if (request.getParameter("SQLerror") != null) {
+                    %>
+                    <div class="alert alert-danger text-center">
+                        <strong>Erro!</strong><%= request.getParameter("SQLerror") %>
+                    </div>
+                    <%}%>
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Login de Correntista</h3>
+                            <h3 class="panel-title">Login de Funcionários</h3>
                         </div>
                         <div class="panel-body">
-                            <form class="form" method="POST" action="">
+                            <form class="form" method="POST" action="./login">
                                 <div class="row">
                                     <div class="form-group">
                                         <div class="col-md-12">
-                                            <label class="control-label" for="focusedInput">CPF</label>
-                                            <input class="form-control" name="cpf" id="focusedInput" type="text" placeholder="NÃºmeros sem pontos ou traÃ§os.">
+                                            <label class="control-label" for="focusedInput">Código</label>
+                                            <input class="form-control" id="focusedInput" name="codigo" type="text" placeholder="Código do Funcionário">
                                         </div>
                                     </div>
                                 </div>
                                 <br>
                                 <div class="row">
                                     <div class="form-group">
-                                        <div class="col-md-6">
-                                            <label class="control-label" for="focusedInput">NÂº da conta</label>
-                                            <input class="form-control" name="conta" id="focusedInput" type="text" placeholder="NÂº da conta">
-                                        </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-12">
                                             <label class="control-label" for="focusedInput">Senha</label>
-                                            <input class="form-control" name="senha" id="focusedInput" type="text" placeholder="Senha">
+                                            <input class="form-control" id="focusedInput" name="senha" type="password" placeholder="Senha">
                                         </div>
                                     </div>
                                 </div>

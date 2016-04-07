@@ -10,6 +10,7 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/WebBank/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     </head>
     <body>
         <nav class="navbar navbar-inverse">
@@ -26,7 +27,7 @@ and open the template in the editor.
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#">Login Funcionários</a></li>
+                        <li><a href="./funcionarios/login.jsp">Login Funcionários</a></li>
                     </ul>
                 </div>
             </div>
@@ -44,7 +45,7 @@ and open the template in the editor.
                                     <div class="form-group">
                                         <div class="col-md-12">
                                             <label class="control-label" for="focusedInput">CPF</label>
-                                            <input class="form-control" id="focusedInput" type="text" placeholder="Números sem pontos ou traços.">
+                                            <input class="form-control" name="cpf" id="focusedInput" type="text" placeholder="Números sem pontos ou traços.">
                                         </div>
                                     </div>
                                 </div>
@@ -53,11 +54,11 @@ and open the template in the editor.
                                     <div class="form-group">
                                         <div class="col-md-6">
                                             <label class="control-label" for="focusedInput">Nº da conta</label>
-                                            <input class="form-control" id="focusedInput" type="text" placeholder="Nº da conta">
+                                            <input class="form-control" name="conta" id="focusedInput" type="text" placeholder="Nº da conta">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="control-label" for="focusedInput">Senha</label>
-                                            <input class="form-control" id="focusedInput" type="text" placeholder="Senha">
+                                            <input class="form-control" name="senha" id="focusedInput" type="text" placeholder="Senha">
                                         </div>
                                     </div>
                                 </div>
