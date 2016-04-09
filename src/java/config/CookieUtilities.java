@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Models;
+package config;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +20,6 @@ public class CookieUtilities {
         if(cookies != null){
             for(Cookie c : cookies){
                 if(cookieName.equals(c.getName())){
-                    System.out.println(c.getName());
                     return true;
                 }
             }

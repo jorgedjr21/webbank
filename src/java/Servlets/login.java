@@ -5,9 +5,9 @@
  */
 package Servlets;
 
-import Models.CookieUtilities;
+import config.CookieUtilities;
 import Models.Funcionario;
-import controllers.Dbconfig;
+import config.Dbconfig;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;

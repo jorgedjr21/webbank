@@ -5,7 +5,7 @@
  */
 package Servlets;
 
-import Models.CookieUtilities;
+import config.CookieUtilities;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;

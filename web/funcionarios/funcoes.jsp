@@ -1,5 +1,4 @@
-<%@page import="Models.Funcionario"%>
-<%@page import="Models.CookieUtilities"%>
+<%@page import="config.CookieUtilities"%>
 <!DOCTYPE html>
 <!--
 To change this license header, choose License Headers in Project Properties.
@@ -33,7 +32,7 @@ and open the template in the editor.
                             if(CookieUtilities.findCookie(request, "fnome")){
                             Cookie c = CookieUtilities.getCookie(request, "fnome"); %>
                         <li><a href="#">Olá, <%= c.getValue() %></a></li>
-                        
+                        <li><a href="../funcionarios/funcoes.jsp">Funções</a></li>                        
                         <% } %>
                     </ul>
                    
@@ -73,7 +72,7 @@ and open the template in the editor.
                             <div class="panel-body">
                                 <ul class="text-center list-unstyled">
                                     <li>
-                                        <a href="#"><i class="fa fa-plus-circle fa-lg text-success"></i> Novas Contas</a>
+                                        <a href="../funcionarios/newacc.jsp"><i class="fa fa-plus-circle fa-lg text-success"></i> Novas Contas</a>
                                     </li>
                                 </ul>
                             </div>
