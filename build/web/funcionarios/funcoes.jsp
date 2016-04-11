@@ -89,7 +89,7 @@ and open the template in the editor.
                             <div class="panel-body">
                                 <ul class="text-center list-unstyled">
                                     <li>
-                                        <a href="#"><i class="fa fa-arrow-up fa-lg text-danger"></i> Saques</a>
+                                        <a href="../funcionarios/saque.jsp"><i class="fa fa-arrow-up fa-lg text-danger"></i> Saques</a>
                                     </li>
                                     <li>
                                         <a href="#"><i class="fa fa-arrow-down fa-lg text-success"></i>    Depósitos</a>
