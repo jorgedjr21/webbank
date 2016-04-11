@@ -72,8 +72,6 @@ and open the template in the editor.
                 <div class="col-md-4 col-md-offset-4">
                     <div class="alert alert-success text-center">
                         <p><strong> <%= request.getAttribute("success") %></strong></p>
-                        <p>O número da conta é -> <strong><%= request.getAttribute("conta") %></strong></p>
-                        
                     </div>
                 </div>
             </div>
@@ -102,7 +100,7 @@ and open the template in the editor.
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label" for="focusedInput">Nº da Conta</label>
-                                            <input class="form-control" id="focusedInput" name="conta" type="text" placeholder="Saldo">
+                                            <input class="form-control" id="focusedInput" name="conta" type="text" placeholder="Nº da Conta">
                                         </div>
                                     </div>
 
