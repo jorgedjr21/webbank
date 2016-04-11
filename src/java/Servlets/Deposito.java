@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,12 +25,10 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Jorge
  */
-@WebServlet(name = "Saque", urlPatterns = {"/funcionarios/saque"})
-public class Saque extends HttpServlet {
-
+@WebServlet(name = "Deposito", urlPatterns = {"/funcionarios/deposito"})
+public class Deposito extends HttpServlet {
     RequestDispatcher dispatcher = null;
-    private PreparedStatement pstm;
-
+    private PreparedStatement pstmt;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -46,10 +46,10 @@ public class Saque extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Saque</title>");
+            out.println("<title>Servlet Deposito</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Saque at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet Deposito at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -81,71 +81,65 @@ public class Saque extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        Connection c = Dbconfig.getConnection();
+        
         String contastr = request.getParameter("conta");
-        String cpf = request.getParameter("CPF");
         String senha = request.getParameter("senha");
+        String cpf = request.getParameter("CPF");
         String valorstr = request.getParameter("valor");
-        if (!checkCampos(contastr, cpf, senha, valorstr)) {
-            dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
+        if (!checkCampos(contastr, senha, cpf, valorstr)) {
+            dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
             request.setAttribute("error", "Todos os campos são obrigatórios!");
             dispatcher.forward(request, response);
             return;
         }
-
-        try {
+            try {
             if (correntista(cpf, senha)) {
                 int numconta = Integer.parseInt(contastr);
                 double valor = Double.parseDouble(valorstr);
                 ResultSet conta = conta(numconta, cpf);
                 if (conta != null) {
-                    Double maxLimite = conta.getDouble("Saldo") + conta.getDouble("Limite");
-                    if (valor > maxLimite) {
-                        dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
-                        request.setAttribute("error", "Não é possivel sacar R$" + valor + " pois nesta conta só há disponivel o valor de R$" + maxLimite + " (saldo + limite). ");
+                    double saldo = conta.getDouble("Saldo");
+                    double newsaldo = saldo + valor;
+                    if(atualizaSaldo(newsaldo, numconta, cpf)>0){
+                         dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
+                        request.setAttribute("success", "Depósito realizado com sucesso!");
                         dispatcher.forward(request, response);
-                       
-                    } else {
-                        Double newSaldo = conta.getDouble("Saldo") - valor;
-                        if (atualizaSaldo(newSaldo, numconta, cpf) > 0) {
-                            dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
-                            request.setAttribute("success", "Saque de R$ " + valor + " realizado com sucesso.O novo Saldo da conta <strong>" + numconta + "</strong> é de <strong>R$ " + newSaldo + "</strong>");
-                            dispatcher.forward(request, response);
-                        } else {
-                            System.out.println("Entrou no else");
-                            dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
-                            request.setAttribute("error", "Não foi possivel completar o saque, por favor tente novamente");
-                            dispatcher.forward(request, response);
-                        }
+                    }else{
+                        dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
+                        request.setAttribute("error", "Erro ao depositar!");
+                        dispatcher.forward(request, response);
                     }
                 }
             }
         } catch (SQLException e) {
             System.out.println(e);
         }
-        //processRequest(request, response);
-    }
+            
+        }
 
-    private boolean checkCampos(String conta, String cpf, String senha, String valor) {
-        if (conta == null || cpf == null || senha == null || valor == null) {
+        //processRequest(request, response);
+    
+
+    private boolean checkCampos(String conta, String senha,String cpf, String valor) {
+        if (conta == null || senha == null || valor == null || cpf == null) {
             return false;
         }
 
-        if (conta.equals("") || cpf.equals("") || senha.equals("") || valor.equals("")) {
+        if (conta.equals("") || senha.equals("") || valor.equals("") ||cpf.equals("")) {
             return false;
         }
         return true;
     }
-
-    private boolean correntista(String CPF, String senha) throws SQLException {
+     private boolean correntista(String CPF, String senha) throws SQLException {
         ResultSet result = null;
         Connection c = Dbconfig.getConnection();
 
-        pstm = c.prepareStatement("SELECT * FROM correntista WHERE CPF = ? and Senha = ?");
-        pstm.setString(1, CPF);
-        pstm.setString(2, senha);
+        pstmt = c.prepareStatement("SELECT * FROM correntista WHERE CPF = ? and Senha = ?");
+        pstmt.setString(1, CPF);
+        pstmt.setString(2, senha);
 
-        result = pstm.executeQuery();
+        result = pstmt.executeQuery();
         if (result.next()) {
             return true;
         }
@@ -155,33 +149,32 @@ public class Saque extends HttpServlet {
     private int atualizaSaldo(Double newSaldo, int conta, String cpf) throws SQLException {
         Connection c = Dbconfig.getConnection();
 
-        pstm = c.prepareStatement("UPDATE conta SET saldo = ? WHERE (conta.Primeiro_Corr = ? OR conta.Segundo_Corr = ? OR conta.Terceiro_Corr = ?)and conta.Numero = ? ");
-        pstm.setDouble(1, newSaldo);
-        pstm.setString(2, cpf);
-        pstm.setString(3, cpf);
-        pstm.setString(4, cpf);
-        pstm.setInt(5, conta);
-        return pstm.executeUpdate();
-    };
+        pstmt = c.prepareStatement("UPDATE conta SET saldo = ? WHERE (conta.Primeiro_Corr = ? OR conta.Segundo_Corr = ? OR conta.Terceiro_Corr = ?)and conta.Numero = ? ");
+        pstmt.setDouble(1, newSaldo);
+        pstmt.setString(2, cpf);
+        pstmt.setString(3, cpf);
+        pstmt.setString(4, cpf);
+        pstmt.setInt(5, conta);
+        return pstmt.executeUpdate();
+    }
 
+    ;
     private ResultSet conta(int numero, String cpf) throws SQLException {
         ResultSet result = null;
         Connection c = Dbconfig.getConnection();
 
-        pstm = c.prepareStatement("SELECT * FROM conta WHERE (conta.Primeiro_Corr = ? OR conta.Segundo_Corr = ? OR conta.Terceiro_Corr = ?)and conta.Numero = ?");
-        pstm.setString(1, cpf);
-        pstm.setString(2, cpf);
-        pstm.setString(3, cpf);
-        pstm.setInt(4, numero);
-        result = pstm.executeQuery();
+        pstmt = c.prepareStatement("SELECT * FROM conta WHERE (conta.Primeiro_Corr = ? OR conta.Segundo_Corr = ? OR conta.Terceiro_Corr = ?)and conta.Numero = ?");
+        pstmt.setString(1, cpf);
+        pstmt.setString(2, cpf);
+        pstmt.setString(3, cpf);
+        pstmt.setInt(4, numero);
+        result = pstmt.executeQuery();
         if (result.next()) {
             return result;
         } else {
             return null;
         }
     }
-
-    ;
 
     /**
      * Returns a short description of the servlet.

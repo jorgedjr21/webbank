@@ -72,6 +72,8 @@ and open the template in the editor.
                 <div class="col-md-4 col-md-offset-4">
                     <div class="alert alert-success text-center">
                         <p><strong> <%= request.getAttribute("success") %></strong></p>
+                        
+                        
                     </div>
                 </div>
             </div>
@@ -88,19 +90,19 @@ and open the template in the editor.
                 </div>
             </div>
             <%}%>
-            <form name="newacc" action="../funcionarios/saque" method="POST">
+            <form name="newacc" action="../funcionarios/deposito" method="POST">
                 <div class="row">
                     <div class="col-md-4 col-md-offset-4">
                         <div class="panel panel-info">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Saque</h3>
+                                <h3 class="panel-title">Depósito</h3>
                             </div>
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label" for="focusedInput">Nº da Conta</label>
-                                            <input class="form-control" id="focusedInput" name="conta" type="text" placeholder="Nº da Conta">
+                                            <input class="form-control" id="focusedInput" name="conta" type="text" placeholder="Saldo">
                                         </div>
                                     </div>
 
@@ -131,7 +133,7 @@ and open the template in the editor.
                 </div>
                 <div class="row">
                     <div class="col-md-4 col-md-offset-4">
-                        <button type="submit" class="btn btn-success btn-block btn-lg">Sacar <i class="fa fa-arrow-right"></i></button>
+                        <button type="submit" class="btn btn-success btn-block btn-lg">Depositar <i class="fa fa-arrow-right"></i></button>
                     </div>
                 </div>
             </form>
