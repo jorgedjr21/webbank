@@ -67,12 +67,12 @@ public class login extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        if(CookieUtilities.findCookie(request,"flogin")){
+
+        if (CookieUtilities.findCookie(request, "flogin")) {
             String address = "../funcionarios/funcoes.jsp";
             response.sendRedirect(address);
-        }else{
-        processRequest(request, response);
+        } else {
+            processRequest(request, response);
         }
     }
 
@@ -100,14 +100,16 @@ public class login extends HttpServlet {
             result = pstm.executeQuery();
             if (result.next()) {
                 f = new Funcionario(result.getInt("Codigo"), result.getString("Nome"), result.getString("Email"), result.getString("Senha"), result.getString("Funcao"));
-
+                address = "../funcionarios/funcoes.jsp";
+                Cookie ck = new Cookie("flogin", String.valueOf(f.getCodigo()));
+                Cookie cn = new Cookie("fnome", f.getNome());
+                response.addCookie(ck);
+                response.addCookie(cn);
+                response.sendRedirect(address);
+            }else{
+                request.setAttribute("SQLerror", "Usuário ou senha incorretos!");
+                request.getRequestDispatcher("../funcionarios/login.jsp").forward(request, response);
             }
-            address = "../funcionarios/funcoes.jsp";
-            Cookie ck = new Cookie("flogin",String.valueOf(f.getCodigo()));
-            Cookie cn = new Cookie("fnome",f.getNome());
-            response.addCookie(ck);
-            response.addCookie(cn);
-            response.sendRedirect(address);
 
         } catch (SQLException ex) {
             request.setAttribute("SQLerror", ex.getMessage());

@@ -36,10 +36,10 @@ and open the template in the editor.
             <div class="row">
                 <div class="col-md-5 col-md-offset-3">
                     <%
-                        if (request.getParameter("SQLerror") != null) {
+                        if (request.getAttribute("SQLerror") != null) {
                     %>
                     <div class="alert alert-danger text-center">
-                        <strong>Erro!</strong><%= request.getParameter("SQLerror") %>
+                        <strong>Erro!</strong><br><%= request.getAttribute("SQLerror") %>
                     </div>
                     <%}%>
                     <div class="panel panel-default">
