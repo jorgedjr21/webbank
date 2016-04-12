@@ -102,7 +102,7 @@ and open the template in the editor.
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label" for="focusedInput">Nº da Conta</label>
-                                            <input class="form-control" id="focusedInput" name="conta" type="text" placeholder="Saldo">
+                                            <input class="form-control" id="focusedInput" name="conta" type="text" placeholder="Nº da conta">
                                         </div>
                                     </div>
 

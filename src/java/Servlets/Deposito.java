@@ -5,6 +5,8 @@
  */
 package Servlets;
 
+import Models.Conta;
+import Models.Transacao;
 import config.Dbconfig;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,6 +14,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
@@ -27,8 +32,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "Deposito", urlPatterns = {"/funcionarios/deposito"})
 public class Deposito extends HttpServlet {
+
     RequestDispatcher dispatcher = null;
     private PreparedStatement pstmt;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -82,7 +89,7 @@ public class Deposito extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         Connection c = Dbconfig.getConnection();
-        
+
         String contastr = request.getParameter("conta");
         String senha = request.getParameter("senha");
         String cpf = request.getParameter("CPF");
@@ -93,49 +100,62 @@ public class Deposito extends HttpServlet {
             dispatcher.forward(request, response);
             return;
         }
-            try {
+        try {
             if (correntista(cpf, senha)) {
                 int numconta = Integer.parseInt(contastr);
                 double valor = Double.parseDouble(valorstr);
-                ResultSet conta = conta(numconta, cpf);
+                Conta conta = retornaConta(numconta, cpf);
                 if (conta != null) {
-                    double saldo = conta.getDouble("Saldo");
+                    double saldo = conta.getSaldo();
                     double newsaldo = saldo + valor;
-                    if(atualizaSaldo(newsaldo, numconta, cpf)>0){
-                         dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
-                        request.setAttribute("success", "Depósito realizado com sucesso!");
+                    if (atualizaSaldo(newsaldo, numconta, cpf) > 0) {
+                        conta.setSaldo(newsaldo);
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        GregorianCalendar calendar = new GregorianCalendar();
+                        Timestamp s = Timestamp.valueOf(format.format(calendar.getTime()));
+                        Transacao.insertTransacao("deposito", numconta, valor, s);
+
+                        dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
+                        request.setAttribute("success", "Depósito realizado com sucesso!<br>Novo saldo da conta é de R$ " + conta.getSaldo());
                         dispatcher.forward(request, response);
-                    }else{
+                    } else {
                         dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
                         request.setAttribute("error", "Erro ao depositar!");
                         dispatcher.forward(request, response);
                     }
+                } else {
+                    dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
+                    request.setAttribute("error", "Conta Inválida. Por favor, tente novamente!");
+                    dispatcher.forward(request, response);
+
                 }
-            }else{
+            } else {
                 dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
                 request.setAttribute("error", "CPF ou senha inválidos!");
                 dispatcher.forward(request, response);
             }
         } catch (SQLException e) {
             System.out.println(e);
-        }
-            
+            dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
+            request.setAttribute("SQLerror", e.getMessage());
+            dispatcher.forward(request, response);
         }
 
-        //processRequest(request, response);
-    
+    }
 
-    private boolean checkCampos(String conta, String senha,String cpf, String valor) {
+    //processRequest(request, response);
+    private boolean checkCampos(String conta, String senha, String cpf, String valor) {
         if (conta == null || senha == null || valor == null || cpf == null) {
             return false;
         }
 
-        if (conta.equals("") || senha.equals("") || valor.equals("") ||cpf.equals("")) {
+        if (conta.equals("") || senha.equals("") || valor.equals("") || cpf.equals("")) {
             return false;
         }
         return true;
     }
-     private boolean correntista(String CPF, String senha) throws SQLException {
+
+    private boolean correntista(String CPF, String senha) throws SQLException {
         ResultSet result = null;
         Connection c = Dbconfig.getConnection();
 
@@ -163,7 +183,7 @@ public class Deposito extends HttpServlet {
     }
 
     ;
-    private ResultSet conta(int numero, String cpf) throws SQLException {
+    private Conta retornaConta(int numero, String cpf) throws SQLException {
         ResultSet result = null;
         Connection c = Dbconfig.getConnection();
 
@@ -174,7 +194,12 @@ public class Deposito extends HttpServlet {
         pstmt.setInt(4, numero);
         result = pstmt.executeQuery();
         if (result.next()) {
-            return result;
+            return new Conta(result.getInt("Numero"),
+                    result.getString("Primeiro_Corr"),
+                    result.getString("Terceiro_Corr"),
+                    result.getString("Terceiro_Corr"),
+                    result.getDouble("Saldo"),
+                    result.getDouble("Limite"));
         } else {
             return null;
         }
