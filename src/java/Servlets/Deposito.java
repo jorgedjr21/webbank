@@ -111,6 +111,10 @@ public class Deposito extends HttpServlet {
                         dispatcher.forward(request, response);
                     }
                 }
+            }else{
+                dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
+                request.setAttribute("error", "CPF ou senha inválidos!");
+                dispatcher.forward(request, response);
             }
         } catch (SQLException e) {
             System.out.println(e);
