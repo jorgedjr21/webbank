@@ -92,7 +92,7 @@ and open the template in the editor.
                                         <a href="../funcionarios/saque.jsp"><i class="fa fa-arrow-up fa-lg text-danger"></i> Saques</a>
                                     </li>
                                     <li>
-                                        <a href="#"><i class="fa fa-arrow-down fa-lg text-success"></i>    Depósitos</a>
+                                        <a href="../funcionarios/deposito.jsp"><i class="fa fa-arrow-down fa-lg text-success"></i>    Depósitos</a>
                                     </li>
                                     <li>
                                         <a href="#"><i class="fa fa-exchange fa-lg text-primary"></i> Transferências</a>
