@@ -131,6 +131,10 @@ public class Saque extends HttpServlet {
                             dispatcher.forward(request, response);
                         }
                     }
+                }else {
+                    dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
+                    request.setAttribute("error", "Conta Inválida. Por favor, tente novamente!");
+                    dispatcher.forward(request, response);
                 }
             }
         } catch (SQLException e) {
