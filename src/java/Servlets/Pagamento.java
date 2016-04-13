@@ -11,7 +11,6 @@ import config.Dbconfig;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,9 +28,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Jorge
  */
-@WebServlet(name = "Saque", urlPatterns = {"/funcionarios/saque"})
-public class Saque extends HttpServlet {
-
+@WebServlet(name = "pagamento", urlPatterns = {"/funcionarios/pagamento"})
+public class Pagamento extends HttpServlet {
     RequestDispatcher dispatcher = null;
     private PreparedStatement pstm;
 
@@ -52,10 +50,10 @@ public class Saque extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Saque</title>");
+            out.println("<title>Servlet pagamento</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Saque at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet pagamento at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -87,14 +85,14 @@ public class Saque extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
         String contastr = request.getParameter("conta");
         String cpf = request.getParameter("CPF");
         String senha = request.getParameter("senha");
         String valorstr = request.getParameter("valor");
         if (!checkCampos(contastr, cpf, senha, valorstr)) {
-            dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
-            request.setAttribute("error", "Todos os campos são obrigat�rios!");
+            dispatcher = request.getRequestDispatcher("../funcionarios/pagamento.jsp");
+            request.setAttribute("error", "Todos os campos são obrigatórios!");
             dispatcher.forward(request, response);
             return;
         }
@@ -107,8 +105,8 @@ public class Saque extends HttpServlet {
                 if (conta != null) {
                     Double maxLimite = conta.getSaldo() + conta.getLimite();
                     if (valor > maxLimite) {
-                        dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
-                        request.setAttribute("error", "Não é possivel sacar R$" + valor + " pois nesta conta só há disponivel o valor de R$" + maxLimite + " (saldo + limite). ");
+                        dispatcher = request.getRequestDispatcher("../funcionarios/pagamento.jsp");
+                        request.setAttribute("error", "Não é possivel pagar o valor de R$" + valor + " pois nesta conta só há disponivel de R$" + maxLimite + " (saldo + limite). ");
                         dispatcher.forward(request, response);
 
                     } else {
@@ -120,19 +118,19 @@ public class Saque extends HttpServlet {
                             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             GregorianCalendar calendar = new GregorianCalendar();
                             Timestamp s = Timestamp.valueOf(format.format(calendar.getTime()));
-                            Transacao.insertTransacao("saque", numconta, valor, s);
+                            Transacao.insertTransacao("pagto", numconta, valor, s);
 
-                            dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
-                            request.setAttribute("success", "Saque de R$ " + valor + " realizado com sucesso.O novo Saldo da conta <strong>" + conta.getNumero() + "</strong> é de <strong>R$ " + conta.getSaldo() + "</strong>");
+                            dispatcher = request.getRequestDispatcher("../funcionarios/pagamento.jsp");
+                            request.setAttribute("success", "Pagamento de R$ " + valor + " realizado com sucesso.O saldo atual da conta <strong>" + conta.getNumero() + "</strong> é de <strong>R$ " + conta.getSaldo() + "</strong>");
                             dispatcher.forward(request, response);
                         } else {
-                            dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
-                            request.setAttribute("error", "Não foi possivel completar o saque, por favor tente novamente");
+                            dispatcher = request.getRequestDispatcher("../funcionarios/pagamento.jsp");
+                            request.setAttribute("error", "Não foi possivel completar o pagamento, por favor tente novamente");
                             dispatcher.forward(request, response);
                         }
                     }
                 }else {
-                    dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
+                    dispatcher = request.getRequestDispatcher("../funcionarios/pagamento.jsp");
                     request.setAttribute("error", "Conta Inválida. Por favor, tente novamente!");
                     dispatcher.forward(request, response);
                 }
@@ -143,9 +141,8 @@ public class Saque extends HttpServlet {
             request.setAttribute("SQLerror", e.getMessage());
             dispatcher.forward(request, response);
         }
-        //processRequest(request, response);
     }
-
+    
     private boolean checkCampos(String conta, String cpf, String senha, String valor) {
         if (conta == null || cpf == null || senha == null || valor == null) {
             return false;
@@ -207,7 +204,8 @@ public class Saque extends HttpServlet {
             return null;
         }
     } ;
-   /**
+
+    /**
      * Returns a short description of the servlet.
      *
      * @return a String containing servlet description

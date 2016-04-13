@@ -6,10 +6,15 @@
 package Servlets;
 
 import config.CookieUtilities;
+import Models.Funcionario;
+import config.Dbconfig;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.*;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,8 +23,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author jorge
  */
-@WebServlet(name = "/funcionarios/logout", urlPatterns = {"/funcionarios/logout"})
-public class logout extends HttpServlet {
+@WebServlet(name = "/funcionarios/login", urlPatterns = {"/funcionarios/login"})
+public class Login extends HttpServlet {
+
+    private PreparedStatement pstm;
+    private ResultSet result;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,10 +46,10 @@ public class logout extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet logout</title>");            
+            out.println("<title>Servlet login</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet logout at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet login at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -59,11 +67,13 @@ public class logout extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        String address = "../funcionarios/login.jsp";
-        CookieUtilities.deleteCookies(request, response);
-        response.sendRedirect(address);
-        //processRequest(request, response);
+
+        if (CookieUtilities.findCookie(request, "flogin")) {
+            String address = "../funcionarios/funcoes.jsp";
+            response.sendRedirect(address);
+        } else {
+            processRequest(request, response);
+        }
     }
 
     /**
@@ -77,7 +87,39 @@ public class logout extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        Connection c = Dbconfig.getConnection();
+        int codigo = Integer.parseInt(request.getParameter("codigo"));
+        String senha = request.getParameter("senha");
+        String address = null;
+        RequestDispatcher dispatcher = null;
+        try {
+            Funcionario f = null;
+            pstm = c.prepareStatement("SELECT * FROM funcionario WHERE Codigo = ? AND Senha = ?");
+            pstm.setInt(1, codigo);
+            pstm.setString(2, senha);
+            result = pstm.executeQuery();
+            if (result.next()) {
+                f = new Funcionario(result.getInt("Codigo"), result.getString("Nome"), result.getString("Email"), result.getString("Senha"), result.getString("Funcao"));
+                address = "../funcionarios/funcoes.jsp";
+                Cookie ck = new Cookie("flogin", String.valueOf(f.getCodigo()));
+                Cookie cf = new Cookie("ffuncao",f.getFuncao());
+                Cookie cn = new Cookie("fnome", f.getNome());
+                response.addCookie(ck);
+                response.addCookie(cf);
+                response.addCookie(cn);
+                response.sendRedirect(address);
+            }else{
+                request.setAttribute("SQLerror", "Usuário ou senha incorretos!");
+                request.getRequestDispatcher("../funcionarios/login.jsp").forward(request, response);
+            }
+
+        } catch (SQLException ex) {
+            request.setAttribute("SQLerror", ex.getMessage());
+            address = "../funcionarios/login.jsp";
+            response.sendRedirect(address);
+        }
+
+        //processRequest(request, response);
     }
 
     /**

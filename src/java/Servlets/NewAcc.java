@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author jorge
  */
 @WebServlet(name = "/funcionarios/newacc", urlPatterns = {"/funcionarios/newacc"})
-public class newacc extends HttpServlet {
+public class NewAcc extends HttpServlet {
 
     private PreparedStatement pstm;
 
