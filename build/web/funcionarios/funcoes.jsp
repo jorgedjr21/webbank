@@ -28,14 +28,14 @@ and open the template in the editor.
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <% 
-                            if(CookieUtilities.findCookie(request, "fnome")){
-                            Cookie c = CookieUtilities.getCookie(request, "fnome"); %>
-                        <li><a href="#">Olá, <%= c.getValue() %></a></li>
+                        <%
+                            if (CookieUtilities.findCookie(request, "fnome")) {
+                                Cookie c = CookieUtilities.getCookie(request, "fnome");%>
+                        <li><a href="#">Olá, <%= c.getValue()%></a></li>
                         <li><a href="../funcionarios/funcoes.jsp">Funções</a></li>                        
-                        <% } %>
+                            <% } %>
                     </ul>
-                   
+
                     <ul class="nav navbar-nav navbar-right">
                         <%
                             if (!CookieUtilities.findCookie(request, "flogin")) {
@@ -63,6 +63,32 @@ and open the template in the editor.
 
                 <%} else {
                 %>
+
+                <%
+                    if (CookieUtilities.findCookie(request, "ffuncao")) {
+                        Cookie cf = CookieUtilities.getCookie(request, "ffuncao");
+                        if (cf.getValue().equals("gerente")) {
+                %>
+
+                <div class="row">
+                    <div class="col-md-4 col-md-offset-3">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Funcionários</h3>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="text-center list-unstyled">
+                                    <li>
+                                        <a href="../funcionarios/newfun.jsp"><i class="fa fa-user fa-lg text-info"></i> Cadastrar Funcionário</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <% }
+                    } %>
                 <div class="row">
                     <div class="col-md-4 col-md-offset-3">
                         <div class="panel panel-info">
@@ -95,11 +121,12 @@ and open the template in the editor.
                                         <a href="../funcionarios/deposito.jsp"><i class="fa fa-arrow-down fa-lg text-success"></i>    Depósitos</a>
                                     </li>
                                     <li>
-                                        <a href="#"><i class="fa fa-exchange fa-lg text-primary"></i> Transferências</a>
+                                        <a href="../funcionarios/pagamento.jsp"><i class="fa fa-barcode fa-lg text-warning"></i> Pagamentos</a>
                                     </li>
                                     <li>
-                                        <a href="#"><i class="fa fa-barcode fa-lg text-warning"></i> Pagamentos</a>
+                                        <a href="#"><i class="fa fa-exchange fa-lg text-primary"></i> Transferências</a>
                                     </li>
+
                                 </ul>
                             </div>
                         </div>

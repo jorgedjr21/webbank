@@ -5,13 +5,19 @@
  */
 package Servlets;
 
+import Models.Conta;
+import Models.Transacao;
 import config.Dbconfig;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -88,7 +94,7 @@ public class Saque extends HttpServlet {
         String valorstr = request.getParameter("valor");
         if (!checkCampos(contastr, cpf, senha, valorstr)) {
             dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
-            request.setAttribute("error", "Todos os campos são obrigatórios!");
+            request.setAttribute("error", "Todos os campos são obrigat�rios!");
             dispatcher.forward(request, response);
             return;
         }
@@ -97,31 +103,45 @@ public class Saque extends HttpServlet {
             if (correntista(cpf, senha)) {
                 int numconta = Integer.parseInt(contastr);
                 double valor = Double.parseDouble(valorstr);
-                ResultSet conta = conta(numconta, cpf);
+                Conta conta = retornaConta(numconta, cpf);
                 if (conta != null) {
-                    Double maxLimite = conta.getDouble("Saldo") + conta.getDouble("Limite");
+                    Double maxLimite = conta.getSaldo() + conta.getLimite();
                     if (valor > maxLimite) {
                         dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
                         request.setAttribute("error", "Não é possivel sacar R$" + valor + " pois nesta conta só há disponivel o valor de R$" + maxLimite + " (saldo + limite). ");
                         dispatcher.forward(request, response);
-                       
+
                     } else {
-                        Double newSaldo = conta.getDouble("Saldo") - valor;
+
+                        Double newSaldo = conta.getSaldo() - valor;
+
                         if (atualizaSaldo(newSaldo, numconta, cpf) > 0) {
+                            conta.setSaldo(newSaldo);
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            GregorianCalendar calendar = new GregorianCalendar();
+                            Timestamp s = Timestamp.valueOf(format.format(calendar.getTime()));
+                            Transacao.insertTransacao("saque", numconta, valor, s);
+
                             dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
-                            request.setAttribute("success", "Saque de R$ " + valor + " realizado com sucesso.O novo Saldo da conta <strong>" + numconta + "</strong> é de <strong>R$ " + newSaldo + "</strong>");
+                            request.setAttribute("success", "Saque de R$ " + valor + " realizado com sucesso.O novo Saldo da conta <strong>" + conta.getNumero() + "</strong> é de <strong>R$ " + conta.getSaldo() + "</strong>");
                             dispatcher.forward(request, response);
                         } else {
-                            System.out.println("Entrou no else");
                             dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
                             request.setAttribute("error", "Não foi possivel completar o saque, por favor tente novamente");
                             dispatcher.forward(request, response);
                         }
                     }
+                }else {
+                    dispatcher = request.getRequestDispatcher("../funcionarios/saque.jsp");
+                    request.setAttribute("error", "Conta Inválida. Por favor, tente novamente!");
+                    dispatcher.forward(request, response);
                 }
             }
         } catch (SQLException e) {
             System.out.println(e);
+            dispatcher = request.getRequestDispatcher("../funcionarios/erro.jsp");
+            request.setAttribute("SQLerror", e.getMessage());
+            dispatcher.forward(request, response);
         }
         //processRequest(request, response);
     }
@@ -162,9 +182,11 @@ public class Saque extends HttpServlet {
         pstm.setString(4, cpf);
         pstm.setInt(5, conta);
         return pstm.executeUpdate();
-    };
+    }
 
-    private ResultSet conta(int numero, String cpf) throws SQLException {
+    ;
+
+    private Conta retornaConta(int numero, String cpf) throws SQLException {
         ResultSet result = null;
         Connection c = Dbconfig.getConnection();
 
@@ -175,15 +197,17 @@ public class Saque extends HttpServlet {
         pstm.setInt(4, numero);
         result = pstm.executeQuery();
         if (result.next()) {
-            return result;
+            return new Conta(result.getInt("Numero"),
+                    result.getString("Primeiro_Corr"),
+                    result.getString("Terceiro_Corr"),
+                    result.getString("Terceiro_Corr"),
+                    result.getDouble("Saldo"),
+                    result.getDouble("Limite"));
         } else {
             return null;
         }
-    }
-
-    ;
-
-    /**
+    } ;
+   /**
      * Returns a short description of the servlet.
      *
      * @return a String containing servlet description

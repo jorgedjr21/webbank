@@ -17,8 +17,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -30,11 +28,10 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Jorge
  */
-@WebServlet(name = "Deposito", urlPatterns = {"/funcionarios/deposito"})
-public class Deposito extends HttpServlet {
-
+@WebServlet(name = "pagamento", urlPatterns = {"/funcionarios/pagamento"})
+public class Pagamento extends HttpServlet {
     RequestDispatcher dispatcher = null;
-    private PreparedStatement pstmt;
+    private PreparedStatement pstm;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -53,10 +50,10 @@ public class Deposito extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Deposito</title>");
+            out.println("<title>Servlet pagamento</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Deposito at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet pagamento at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -88,68 +85,70 @@ public class Deposito extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Connection c = Dbconfig.getConnection();
-
+        
         String contastr = request.getParameter("conta");
-        String senha = request.getParameter("senha");
         String cpf = request.getParameter("CPF");
+        String senha = request.getParameter("senha");
         String valorstr = request.getParameter("valor");
-        if (!checkCampos(contastr, senha, cpf, valorstr)) {
-            dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
+        if (!checkCampos(contastr, cpf, senha, valorstr)) {
+            dispatcher = request.getRequestDispatcher("../funcionarios/pagamento.jsp");
             request.setAttribute("error", "Todos os campos são obrigatórios!");
             dispatcher.forward(request, response);
             return;
         }
+
         try {
             if (correntista(cpf, senha)) {
                 int numconta = Integer.parseInt(contastr);
                 double valor = Double.parseDouble(valorstr);
                 Conta conta = retornaConta(numconta, cpf);
                 if (conta != null) {
-                    double saldo = conta.getSaldo();
-                    double newsaldo = saldo + valor;
-                    if (atualizaSaldo(newsaldo, numconta, cpf) > 0) {
-                        conta.setSaldo(newsaldo);
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        GregorianCalendar calendar = new GregorianCalendar();
-                        Timestamp s = Timestamp.valueOf(format.format(calendar.getTime()));
-                        Transacao.insertTransacao("deposito", numconta, valor, s);
+                    Double maxLimite = conta.getSaldo() + conta.getLimite();
+                    if (valor > maxLimite) {
+                        dispatcher = request.getRequestDispatcher("../funcionarios/pagamento.jsp");
+                        request.setAttribute("error", "Não é possivel pagar o valor de R$" + valor + " pois nesta conta só há disponivel de R$" + maxLimite + " (saldo + limite). ");
+                        dispatcher.forward(request, response);
 
-                        dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
-                        request.setAttribute("success", "Depósito realizado com sucesso!<br>Novo saldo da conta é de R$ " + conta.getSaldo());
-                        dispatcher.forward(request, response);
                     } else {
-                        dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
-                        request.setAttribute("error", "Erro ao depositar!");
-                        dispatcher.forward(request, response);
+
+                        Double newSaldo = conta.getSaldo() - valor;
+
+                        if (atualizaSaldo(newSaldo, numconta, cpf) > 0) {
+                            conta.setSaldo(newSaldo);
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            GregorianCalendar calendar = new GregorianCalendar();
+                            Timestamp s = Timestamp.valueOf(format.format(calendar.getTime()));
+                            Transacao.insertTransacao("pagto", numconta, valor, s);
+
+                            dispatcher = request.getRequestDispatcher("../funcionarios/pagamento.jsp");
+                            request.setAttribute("success", "Pagamento de R$ " + valor + " realizado com sucesso.O saldo atual da conta <strong>" + conta.getNumero() + "</strong> é de <strong>R$ " + conta.getSaldo() + "</strong>");
+                            dispatcher.forward(request, response);
+                        } else {
+                            dispatcher = request.getRequestDispatcher("../funcionarios/pagamento.jsp");
+                            request.setAttribute("error", "Não foi possivel completar o pagamento, por favor tente novamente");
+                            dispatcher.forward(request, response);
+                        }
                     }
-                } else {
-                    dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
+                }else {
+                    dispatcher = request.getRequestDispatcher("../funcionarios/pagamento.jsp");
                     request.setAttribute("error", "Conta Inválida. Por favor, tente novamente!");
                     dispatcher.forward(request, response);
-
                 }
-            } else {
-                dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
-                request.setAttribute("error", "CPF ou senha inválidos!");
-                dispatcher.forward(request, response);
             }
         } catch (SQLException e) {
             System.out.println(e);
-            dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
+            dispatcher = request.getRequestDispatcher("../funcionarios/erro.jsp");
             request.setAttribute("SQLerror", e.getMessage());
             dispatcher.forward(request, response);
         }
-
     }
-
-    //processRequest(request, response);
-    private boolean checkCampos(String conta, String senha, String cpf, String valor) {
-        if (conta == null || senha == null || valor == null || cpf == null) {
+    
+    private boolean checkCampos(String conta, String cpf, String senha, String valor) {
+        if (conta == null || cpf == null || senha == null || valor == null) {
             return false;
         }
 
-        if (conta.equals("") || senha.equals("") || valor.equals("") || cpf.equals("")) {
+        if (conta.equals("") || cpf.equals("") || senha.equals("") || valor.equals("")) {
             return false;
         }
         return true;
@@ -159,11 +158,11 @@ public class Deposito extends HttpServlet {
         ResultSet result = null;
         Connection c = Dbconfig.getConnection();
 
-        pstmt = c.prepareStatement("SELECT * FROM correntista WHERE CPF = ? and Senha = ?");
-        pstmt.setString(1, CPF);
-        pstmt.setString(2, senha);
+        pstm = c.prepareStatement("SELECT * FROM correntista WHERE CPF = ? and Senha = ?");
+        pstm.setString(1, CPF);
+        pstm.setString(2, senha);
 
-        result = pstmt.executeQuery();
+        result = pstm.executeQuery();
         if (result.next()) {
             return true;
         }
@@ -173,26 +172,27 @@ public class Deposito extends HttpServlet {
     private int atualizaSaldo(Double newSaldo, int conta, String cpf) throws SQLException {
         Connection c = Dbconfig.getConnection();
 
-        pstmt = c.prepareStatement("UPDATE conta SET saldo = ? WHERE (conta.Primeiro_Corr = ? OR conta.Segundo_Corr = ? OR conta.Terceiro_Corr = ?)and conta.Numero = ? ");
-        pstmt.setDouble(1, newSaldo);
-        pstmt.setString(2, cpf);
-        pstmt.setString(3, cpf);
-        pstmt.setString(4, cpf);
-        pstmt.setInt(5, conta);
-        return pstmt.executeUpdate();
+        pstm = c.prepareStatement("UPDATE conta SET saldo = ? WHERE (conta.Primeiro_Corr = ? OR conta.Segundo_Corr = ? OR conta.Terceiro_Corr = ?)and conta.Numero = ? ");
+        pstm.setDouble(1, newSaldo);
+        pstm.setString(2, cpf);
+        pstm.setString(3, cpf);
+        pstm.setString(4, cpf);
+        pstm.setInt(5, conta);
+        return pstm.executeUpdate();
     }
 
     ;
+
     private Conta retornaConta(int numero, String cpf) throws SQLException {
         ResultSet result = null;
         Connection c = Dbconfig.getConnection();
 
-        pstmt = c.prepareStatement("SELECT * FROM conta WHERE (conta.Primeiro_Corr = ? OR conta.Segundo_Corr = ? OR conta.Terceiro_Corr = ?)and conta.Numero = ?");
-        pstmt.setString(1, cpf);
-        pstmt.setString(2, cpf);
-        pstmt.setString(3, cpf);
-        pstmt.setInt(4, numero);
-        result = pstmt.executeQuery();
+        pstm = c.prepareStatement("SELECT * FROM conta WHERE (conta.Primeiro_Corr = ? OR conta.Segundo_Corr = ? OR conta.Terceiro_Corr = ?)and conta.Numero = ?");
+        pstm.setString(1, cpf);
+        pstm.setString(2, cpf);
+        pstm.setString(3, cpf);
+        pstm.setInt(4, numero);
+        result = pstm.executeQuery();
         if (result.next()) {
             return new Conta(result.getInt("Numero"),
                     result.getString("Primeiro_Corr"),
@@ -203,7 +203,7 @@ public class Deposito extends HttpServlet {
         } else {
             return null;
         }
-    }
+    } ;
 
     /**
      * Returns a short description of the servlet.

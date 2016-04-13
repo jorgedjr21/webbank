@@ -29,8 +29,9 @@ and open the template in the editor.
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <%
-                            if (CookieUtilities.findCookie(request, "fnome")) {
-                                Cookie c = CookieUtilities.getCookie(request, "fnome");%>
+                            if (CookieUtilities.findCookie(request, "fnome") && CookieUtilities.findCookie(request, "ffuncao")) {
+                                Cookie c = CookieUtilities.getCookie(request, "fnome");
+                        %>
                         <li><a href="#">Olá, <%= c.getValue()%></a></li>
                         <li><a href="../funcionarios/funcoes.jsp">Funções</a></li>  
 
@@ -53,12 +54,13 @@ and open the template in the editor.
         </nav>
         <div class="container-fluid">
             <%
-                if (!CookieUtilities.findCookie(request, "flogin")) {
+                Cookie cf = CookieUtilities.getCookie(request, "ffuncao");
+                if (!CookieUtilities.findCookie(request, "flogin") && !cf.getValue().equals("gerente")) {
             %>
             <div class="row"> 
                 <div class="col-md-12">
                     <div class="alert alert-danger text-center">
-                        <strong>Erro!</strong>Você precisa <a href="./login.jsp" class="alert-link">logar</a> para ter acesso a esta página.
+                        <strong>Erro!</strong>Você não tem acesso a esta página!
                     </div>
                 </div>
             </div>
@@ -71,47 +73,39 @@ and open the template in the editor.
             <div class="row">
                 <div class="col-md-4 col-md-offset-4">
                     <div class="alert alert-success text-center">
-                        <p><strong> <%= request.getAttribute("success") %></strong></p>
-                        
-                        
+                        <p><strong> <%= request.getAttribute("success")%></strong></p>
                     </div>
                 </div>
             </div>
             <%}%>
-            
+
             <%
                 if (request.getAttribute("error") != null) {
             %>
             <div class="row">
                 <div class="col-md-4 col-md-offset-4">
                     <div class="alert alert-danger text-center">
-                        <strong> <%= request.getAttribute("error") %></strong>
+                        <strong> <%= request.getAttribute("error")%></strong>
                     </div>
                 </div>
             </div>
             <%}%>
-            <form name="newacc" action="../funcionarios/deposito" method="POST">
+            <form name="newfun" action="../funcionarios/novoFuncionario" method="POST">
                 <div class="row">
-                    <div class="col-md-4 col-md-offset-4">
+                    <div class="col-md-6 col-md-offset-3">
                         <div class="panel panel-info">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Depósito</h3>
+                                <h3 class="panel-title">Cadastrar Funcionários</h3>
                             </div>
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label" for="focusedInput">Nº da Conta</label>
-                                            <input class="form-control" id="focusedInput" name="conta" type="text" placeholder="Nº da conta">
+                                            <label class="control-label" for="focusedInput">Nome</label>
+                                            <input class="form-control" id="focusedInput" name="nome" type="text" placeholder="Nº da Conta">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="control-label" for="focusedInput">CPF Correntista</label>
-                                            <input class="form-control" id="focusedInput" name="CPF" type="text" placeholder="CPF">
-                                        </div>
-                                    </div>
 
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -119,11 +113,23 @@ and open the template in the editor.
                                             <input class="form-control" id="focusedInput" name="senha" type="password" placeholder="Senha">
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="control-label" for="focusedInput">Valor (R$)</label>
-                                            <input class="form-control" id="focusedInput" name="valor" type="text" placeholder="Valor">
+                                            <label class="control-label" for="focusedInput">Email</label>
+                                            <input class="form-control" id="focusedInput" name="email" type="text" placeholder="Email">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label" for="focusedInput">Função</label>
+                                            <select name="funcao" class="form-control">
+                                                <option value="gerente">Gerente</option>
+                                                <option value="caixa">Caixa</option>
+                                                <option value="atendente">Atendente</option>
+                                            </select>
+                                            <!--<input class="form-control" id="focusedInput" name="valor" type="text" placeholder="Valor">-->
                                         </div>
                                     </div>
                                 </div>
@@ -133,12 +139,10 @@ and open the template in the editor.
                 </div>
                 <div class="row">
                     <div class="col-md-4 col-md-offset-4">
-                        <button type="submit" class="btn btn-success btn-block btn-lg">Depositar <i class="fa fa-arrow-right"></i></button>
+                        <button type="submit" class="btn btn-success btn-block btn-lg">Cadastrar Funcionário <i class="fa fa-arrow-right"></i></button>
                     </div>
                 </div>
             </form>
-
-
 
             <%}%>
         </div>

@@ -22,6 +22,13 @@ public class Funcionario {
         this.Senha = senha;
         this.Funcao = funcao;
     }
+    
+    public Funcionario(String nome,String senha,String email,String funcao){
+        this.Nome = nome;
+        this.Email = email;
+        this.Senha = senha;
+        this.Funcao = funcao;
+    }
     /**
      * @return the Codigo
      */
