@@ -27,14 +27,23 @@ and open the template in the editor.
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="./funcionarios/login.jsp">Login FuncionÃ¡rios</a></li>
+                        <li><a href="./funcionarios/login.jsp">Login Funcionários</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
         <div class="content">
+
             <div class="row">
                 <div class="col-md-5 col-md-offset-3">
+                    <%
+                        if (request.getAttribute("error") != null) {
+                    %>
+                    <div class="alert alert-danger text-center">
+                        <strong>Erro!</strong><br><%= request.getAttribute("error")%>
+                    </div>
+                    <%}%>
+
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Login de Correntista</h3>
@@ -45,7 +54,7 @@ and open the template in the editor.
                                     <div class="form-group">
                                         <div class="col-md-12">
                                             <label class="control-label" for="focusedInput">CPF</label>
-                                            <input class="form-control" name="cpf" id="focusedInput" type="text" placeholder="NÃºmeros sem pontos ou traÃ§os.">
+                                            <input class="form-control" name="cpf" id="focusedInput" type="text" placeholder="Números sem pontos ou traços.">
                                         </div>
                                     </div>
                                 </div>
@@ -53,12 +62,12 @@ and open the template in the editor.
                                 <div class="row">
                                     <div class="form-group">
                                         <div class="col-md-6">
-                                            <label class="control-label" for="focusedInput">NÂº da conta</label>
-                                            <input class="form-control" name="conta" id="focusedInput" type="text" placeholder="NÂº da conta">
+                                            <label class="control-label" for="focusedInput">Nº da conta</label>
+                                            <input class="form-control" name="conta" id="focusedInput" type="text" placeholder="Nº da conta">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="control-label" for="focusedInput">Senha</label>
-                                            <input class="form-control" name="senha" id="focusedInput" type="text" placeholder="Senha">
+                                            <input class="form-control" name="senha" id="focusedInput" type="password" placeholder="Senha">
                                         </div>
                                     </div>
                                 </div>
