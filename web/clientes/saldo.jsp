@@ -68,20 +68,11 @@ and open the template in the editor.
                     <div class="col-md-4 col-md-offset-3">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Operações</h3>
+                                <h3 class="panel-title">Saldo</h3>
                             </div>
                             <div class="panel-body">
-                                <ul class="text-center list-unstyled">
-                                    <li>
-                                        <a href="../clientes/saque.jsp"><i class="fa fa-arrow-up fa-lg text-danger"></i> Transferência</a>
-                                    </li>
-                                    <li>
-                                        <a href="../clientes/saldo"><i class="fa fa-arrow-down fa-lg text-success"></i> Saldo</a>
-                                    </li>
-                                    <li>
-                                        <a href="../clientes/pagamento.jsp"><i class="fa fa-barcode fa-lg text-warning"></i> Extrato</a>
-                                    </li>
-                                </ul>
+                                <p>A <strong>Conta</strong> <%= request.getAttribute("numero") %> possui o seguinte saldo e limite:</p>
+                                <p><strong>Saldo: R$</strong><%= request.getAttribute("saldo") %> <strong>Limite: R$</strong><%= request.getAttribute("limite") %> </p>
                             </div>
                         </div>
                     </div>
