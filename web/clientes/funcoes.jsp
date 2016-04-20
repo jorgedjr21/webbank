@@ -73,7 +73,7 @@ and open the template in the editor.
                             <div class="panel-body">
                                 <ul class="text-center list-unstyled">
                                     <li>
-                                        <a href="../clientes/saque.jsp"><i class="fa fa-arrow-up fa-lg text-danger"></i> Transferência</a>
+                                        <a href="../clientes/transferencia.jsp"><i class="fa fa-exchange fa-lg text-primary"></i> Transferência</a>
                                     </li>
                                     <li>
                                         <a href="../clientes/saldo"><i class="fa fa-arrow-down fa-lg text-success"></i> Saldo</a>
