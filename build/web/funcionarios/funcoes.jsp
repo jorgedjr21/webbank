@@ -126,6 +126,13 @@ and open the template in the editor.
                                     <li>
                                         <a href="#"><i class="fa fa-exchange fa-lg text-primary"></i> Transferências</a>
                                     </li>
+                                    <hr>
+                                    <li>
+                                        <a href="../funcionarios/saldo.jsp"> Saldo</a>
+                                    </li>
+                                    <li>
+                                        <a href="#"> Extrato</a>
+                                    </li>
 
                                 </ul>
                             </div>

@@ -31,6 +31,10 @@ and open the template in the editor.
                         <%
                             if (CookieUtilities.findCookie(request, "fnome") && CookieUtilities.findCookie(request, "ffuncao")) {
                                 Cookie c = CookieUtilities.getCookie(request, "fnome");
+                                Cookie cf = CookieUtilities.getCookie(request, "ffuncao");
+                                if(!cf.getValue().equals("gerente")){
+                                 response.sendRedirect("../funcionarios/funcoes.jsp");
+                                }
                         %>
                         <li><a href="#">Olá, <%= c.getValue()%></a></li>
                         <li><a href="../funcionarios/funcoes.jsp">Funções</a></li>  
