@@ -61,27 +61,47 @@ and open the template in the editor.
                     </div>
                 </div>
 
-                <%} else{
+                <%} else {
                 %>
+                <%
+                    if (request.getAttribute("error") != null) {
+                %>
+                <div class="row">
+                    <div class="col-md-5 col-md-offset-3">
+                        <div class="alert alert-danger text-center">
+                            <strong> <%= request.getAttribute("error")%></strong>
+                        </div>
+                    </div>
+                </div>
+                <%}%>
 
                 <div class="row">
-                    <div class="col-md-4 col-md-offset-3">
+                    <div class="col-md-5 col-md-offset-3">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Operações</h3>
+                                <h3 class="panel-title">Extrato</h3>
                             </div>
                             <div class="panel-body">
-                                <ul class="text-center list-unstyled">
-                                    <li>
-                                        <a href="../clientes/transferencia.jsp"><i class="fa fa-exchange fa-lg text-primary"></i> Transferência</a>
-                                    </li>
-                                    <li>
-                                        <a href="../clientes/saldo"><i class="fa fa-arrow-down fa-lg text-success"></i> Saldo</a>
-                                    </li>
-                                    <li>
-                                        <a href="../clientes/extrato.jsp"><i class="fa fa-barcode fa-lg text-warning"></i> Extrato</a>
-                                    </li>
-                                </ul>
+                                <form name="extrato" action="../clientes/extratocorrentista" method="post">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <div class="col-md-6">
+                                                <label class="control-label" for="focusedInput">Data de Incio</label>
+                                                <input class="form-control" id="focusedInput" name="datainicial" type="text" placeholder="xx/xx/xxxx">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="control-label" for="focusedInput">Data Final</label>
+                                                <input class="form-control" id="focusedInput" name="datafinal" type="text" placeholder="xx/xx/xxxx">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>    
+                                    <div class="row">
+                                        <div class="col-md-5 col-md-offset-3">
+                                            <button type="submit" class="btn btn-primary btn-block btn-lg">Consultar </button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>

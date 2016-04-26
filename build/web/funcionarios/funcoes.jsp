@@ -131,7 +131,7 @@ and open the template in the editor.
                                         <a href="../funcionarios/saldo.jsp"> Saldo</a>
                                     </li>
                                     <li>
-                                        <a href="#"> Extrato</a>
+                                        <a href="../funcionarios/extrato.jsp"> Extrato</a>
                                     </li>
 
                                 </ul>

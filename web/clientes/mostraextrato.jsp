@@ -1,3 +1,5 @@
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.sql.ResultSet"%>
 <%@page import="config.CookieUtilities"%>
 <!DOCTYPE html>
 <!--
@@ -65,23 +67,47 @@ and open the template in the editor.
                 %>
 
                 <div class="row">
-                    <div class="col-md-4 col-md-offset-3">
+                    <div class="col-md-6 col-md-offset-3">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Operações</h3>
+                                <h3 class="panel-title">Extrato</h3>
                             </div>
                             <div class="panel-body">
-                                <ul class="text-center list-unstyled">
-                                    <li>
-                                        <a href="../clientes/transferencia.jsp"><i class="fa fa-exchange fa-lg text-primary"></i> Transferência</a>
-                                    </li>
-                                    <li>
-                                        <a href="../clientes/saldo"><i class="fa fa-arrow-down fa-lg text-success"></i> Saldo</a>
-                                    </li>
-                                    <li>
-                                        <a href="../clientes/extrato.jsp"><i class="fa fa-barcode fa-lg text-warning"></i> Extrato</a>
-                                    </li>
-                                </ul>
+                                <% 
+                                 ResultSet transacoes = (ResultSet) request.getAttribute("transacoes");
+                                %>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr >
+                                            <th class="text-center">Código</th>
+                                            <th class="text-center">Tipo</th>
+                                            <th class="text-center">Conta</th>
+                                            <th class="text-center">Conta destino</th>
+                                            <th class="text-center">Valor</th>
+                                            <th class="text-center">Data</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% while(transacoes.next()){
+                                            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                                            String date = format.format(transacoes.getTimestamp("data"));
+                                        %>
+                                        <tr>
+                                            <td class="text-center"><%= transacoes.getInt("Codigo") %></td>
+                                            <td class="text-center"><%= transacoes.getString("Tipo") %></td>
+                                            <td class="text-center"><%= transacoes.getInt("Nro_Conta") %></td>
+                                            <% if(transacoes.getInt("Nro_Conta_Transf") <= 0 ){%>
+                                                <td class="text-center" >-</td>
+                                            <%}else{%>
+                                                <td class="text-center" ><%= transacoes.getInt("Nro_Conta_Transf") %></td>
+                                                <%}%>
+                                            <td class="text-center" >R$ <%= transacoes.getDouble("Valor") %></td>
+                                            <td class="text-center"><%= date %></td>
+                                        </tr>
+                                        
+                                        <%}%>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
