@@ -124,7 +124,7 @@ and open the template in the editor.
                                         <a href="../funcionarios/pagamento.jsp"><i class="fa fa-barcode fa-lg text-warning"></i> Pagamentos</a>
                                     </li>
                                     <li>
-                                        <a href="#"><i class="fa fa-exchange fa-lg text-primary"></i> Transferências</a>
+                                        <a href="../funcionarios/transferencia.jsp"><i class="fa fa-exchange fa-lg text-primary"></i> Transferências</a>
                                     </li>
                                     <hr>
                                     <li>
