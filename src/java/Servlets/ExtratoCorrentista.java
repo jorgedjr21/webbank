@@ -154,10 +154,11 @@ public class ExtratoCorrentista extends HttpServlet {
 
     private ResultSet getExtrato(int conta, java.sql.Date de, java.sql.Date ate) throws SQLException {
         Connection c = Dbconfig.getConnection();
-        pstm = c.prepareStatement("SELECT * FROM transacao WHERE Nro_Conta = ? AND (data between ? AND ?)");
+        pstm = c.prepareStatement("SELECT * FROM transacao WHERE (Nro_Conta = ? || Nro_Conta_Transf = ?) AND (data between ? AND ?)");
         pstm.setInt(1, conta);
-        pstm.setDate(2, de);
-        pstm.setDate(3, ate);
+        pstm.setInt(2,conta);
+        pstm.setDate(3, de);
+        pstm.setDate(4, ate);
         result = pstm.executeQuery();
         return result;
     }
