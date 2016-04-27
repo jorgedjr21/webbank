@@ -88,7 +88,8 @@ and open the template in the editor.
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% while(transacoes.next()){
+                                        <% if(transacoes.next()) {%>
+                                        <% do{
                                             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                                             String date = format.format(transacoes.getTimestamp("data"));
                                         %>
@@ -105,7 +106,12 @@ and open the template in the editor.
                                             <td class="text-center"><%= date %></td>
                                         </tr>
                                         
-                                        <%}%>
+                                        <%}while(transacoes.next());
+                                        }else{%>
+                                        <tr>
+                                            <td colspan="6" class="info text-center">Nenhuma transação foi encontrada no período informado.</td>
+                                        </tr>
+                                        <% } %>
                                     </tbody>
                                 </table>
                             </div>

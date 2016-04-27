@@ -59,7 +59,7 @@ public class Logout extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+       
         String address = "../funcionarios/login.jsp";
         CookieUtilities.deleteCookies(request, response);
         response.sendRedirect(address);

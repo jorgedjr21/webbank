@@ -104,18 +104,30 @@ and open the template in the editor.
                                 <div class="panel-body">
                                     <div class="col-md-6">
                                         <div class="form-group">
+                                            <label class="control-label" for="focusedInput">CPF Correntista</label>
+                                            <input class="form-control" id="focusedInput" name="cpfcorr" type="text" placeholder="CPF Correntista">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label" for="focusedInput">Senha Correntista</label>
+                                            <input class="form-control" id="focusedInput" name="senha" type="password" placeholder="Senha Correntista">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
                                             <label class="control-label" for="focusedInput">Conta Origem</label>
-                                            <input class="form-control" id="focusedInput" name="forigem" type="text" placeholder="Conta Origem">
+                                            <input class="form-control" id="focusedInput" name="corigem" type="text" placeholder="Conta Origem">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label" for="focusedInput">Conta Destino</label>
-                                            <input class="form-control" id="focusedInput" name="fdestino" type="text" placeholder="Conta Destino">
+                                            <input class="form-control" id="focusedInput" name="cdestino" type="text" placeholder="Conta Destino">
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="control-label" for="focusedInput">Valor</label>
                                             <input class="form-control" id="focusedInput" name="valor" type="text" placeholder="Valor">

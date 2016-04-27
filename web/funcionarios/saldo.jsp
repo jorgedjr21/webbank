@@ -43,7 +43,7 @@ and open the template in the editor.
                         %>
                         <li><a href="/WebBank/funcionarios/login.jsp">Login Clientes</a></li>
                             <%} else {%>
-                        <li><a href="../clientes/logout">Logout</a></li>
+                        <li><a href="../funcionarios/logout">Logout</a></li>
                             <%}%>
                     </ul>
                 </div>

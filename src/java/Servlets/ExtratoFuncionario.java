@@ -144,7 +144,7 @@ public class ExtratoFuncionario extends HttpServlet {
             return false;
         }
 
-        if (datainicial.equals("") || datafinal.equals("") || nroContaStr == null) {
+        if (datainicial.equals("") || datafinal.equals("") || nroContaStr.equals("")) {
             return false;
         }
         return true;
