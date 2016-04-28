@@ -135,7 +135,6 @@ public class ExtratoFuncionario extends HttpServlet {
 
     private int diferencaEmDias(long de, long ate) {
         int diff = (int) ((ate - de) / (1000 * 60 * 60 * 24));
-        System.out.println(diff);
         return diff;
     }
 

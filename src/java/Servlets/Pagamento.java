@@ -136,7 +136,6 @@ public class Pagamento extends HttpServlet {
                 }
             }
         } catch (SQLException e) {
-            System.out.println(e);
             dispatcher = request.getRequestDispatcher("../funcionarios/erro.jsp");
             request.setAttribute("SQLerror", e.getMessage());
             dispatcher.forward(request, response);

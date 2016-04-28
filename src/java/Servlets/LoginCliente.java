@@ -108,7 +108,6 @@ public class LoginCliente extends HttpServlet {
             result = pstm.executeQuery();
             if (result.next()) {
 
-                System.out.println(result.getInt("Numero"));
                 Cookie cf = new Cookie("cnome", result.getString("Nome"));
                 Cookie cn = new Cookie("cconta", String.valueOf(result.getInt("Numero")));
                 Cookie ccpf = new Cookie("ccpf", result.getString("CPF"));

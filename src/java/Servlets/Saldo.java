@@ -76,7 +76,6 @@ public class Saldo extends HttpServlet {
         if (CookieUtilities.findCookie(request, "cconta") && CookieUtilities.findCookie(request, "ccpf")) {
             Cookie cconta = CookieUtilities.getCookie(request, "cconta");
             Cookie ccpf = CookieUtilities.getCookie(request, "ccpf");
-            System.out.println(ccpf.getValue());
             String contastr = cconta.getValue();
 
             int conta = Integer.parseInt(contastr);

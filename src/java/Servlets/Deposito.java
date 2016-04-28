@@ -135,7 +135,6 @@ public class Deposito extends HttpServlet {
                 dispatcher.forward(request, response);
             }
         } catch (SQLException e) {
-            System.out.println(e);
             dispatcher = request.getRequestDispatcher("../funcionarios/deposito.jsp");
             request.setAttribute("SQLerror", e.getMessage());
             dispatcher.forward(request, response);

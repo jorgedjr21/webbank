@@ -102,7 +102,6 @@ public class SaldoF extends HttpServlet {
                 dispatcher.forward(request, response);
             }
             
-            System.out.println(c.getLimite());
             dispatcher = request.getRequestDispatcher("../funcionarios/saldo.jsp");
             request.setAttribute("success", "O saldo atual da conta é: R$" + c.getSaldo() + " com limite de: R$" + c.getLimite());
             dispatcher.forward(request, response);
